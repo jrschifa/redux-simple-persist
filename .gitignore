@@ -1,0 +1,17 @@
+# build
+build/
+
+# junk
+Thumbs.db
+*.DS_Store
+
+# ide
+.vs/
+.idea/
+*.iml
+*.patch
+*.swp
+
+# nodejs
+node_modules
+npm-debug.log
