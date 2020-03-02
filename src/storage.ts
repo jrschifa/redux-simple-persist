@@ -28,7 +28,7 @@ export async function loadStateFromStorage<TState>({ rules, storage: defaultStor
         const reads = rules.map((rule: SimplePersistRule) => {
             const storage = storageMap[rule.key] ?? createStorageInstance(rule.key, rule.storage ?? defaultStorage);
             emitBeginLoadRule(rule);
-            return storage.getItem<string>(rule.key).then((raw): [string, Partial<TState> | MapToStateThunk<TState> | null] => {
+            return storage.getItem<string>(rule.key).then((raw: string): [string, Partial<TState> | MapToStateThunk<TState> | null] => {
                 const data = raw ? JSON.parse(raw) : null;
                 const state = raw ? rule.mapToState(data) : null;
                 emitEndLoadRule(rule);
