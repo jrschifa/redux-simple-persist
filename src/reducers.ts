@@ -1,4 +1,4 @@
-import * as PersistActions from './actions';
+import { ActionTypes } from './actions';
 import { Reducer } from 'redux';
 import * as $E from './events';
 import { mergeState } from './utils';
@@ -17,11 +17,11 @@ export const emitEndStateMerge = () => $E.persistanceEvents.emit($E.END_STATE_ME
  * @param reducer
  */
 export const persistReducer = <TState>(reducer: Reducer<TState>) => {
-    return (prevState: TState, action: PersistActions.ActionType) => {
+    return (prevState: TState, action: ActionTypes) => {
         switch (action.type) {
-            case PersistActions.LOAD_STATE_SUCCESS: {
+            case '@@redux-simple-persist/LOAD_STATE_SUCCESS': {
                 emitBeginStateMerge();
-                const nextState = mergeState(prevState, action.state);
+                const nextState = mergeState(prevState, action.payload);
                 emitEndStateMerge();
                 return nextState;
             }

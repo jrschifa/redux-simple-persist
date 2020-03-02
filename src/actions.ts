@@ -1,78 +1,29 @@
 import { SimplePersistRule } from './models';
 
-export const LOAD_STATE_REQUEST = '@@redux-simple-persist/LOAD_STATE_REQUEST';
-export const LOAD_STATE_SUCCESS = '@@redux-simple-persist/LOAD_STATE_SUCCESS';
-export const LOAD_STATE_FAILURE = '@@redux-simple-persist/LOAD_STATE_FAILURE';
+import { createAction, ActionType } from './utils';
 
-export interface LoadStateRequest {
-    type: typeof LOAD_STATE_REQUEST;
-}
+const loadStateRequest = createAction('@@redux-simple-persist/LOAD_STATE_REQUEST');
+const loadStateSuccess = createAction('@@redux-simple-persist/LOAD_STATE_SUCCESS', (state: any) => state);
+const loadStateFailure = createAction('@@redux-simple-persist/LOAD_STATE_FAILURE', (err: any) => err);
 
-export interface LoadStateSuccess {
-    type: typeof LOAD_STATE_SUCCESS;
-    state: any;
-}
+const saveStateRequest = createAction('@@redux-simple-persist/SAVE_STATE_REQUEST', (rules: SimplePersistRule[] = []) => rules);
+const saveStateSuccess = createAction('@@redux-simple-persist/SAVE_STATE_SUCCESS');
+const saveStateFailure = createAction('@@redux-simple-persist/SAVE_STATE_FAILURE', (err: any) => err);
 
-export interface LoadStateFailure {
-    type: typeof LOAD_STATE_FAILURE;
-    err: any;
-}
+const clearStateRequest = createAction('@@redux-simple-persist/CLEAR_STATE_REQUEST');
+const clearStateSuccess = createAction('@@redux-simple-persist/CLEAR_STATE_SUCCESS');
+const clearStateFailure = createAction('@@redux-simple-persist/CLEAR_STATE_FAILURE', (err: any) => err);
 
-export type LoadStateType = LoadStateRequest | LoadStateSuccess | LoadStateFailure;
+export const actions = {
+  loadStateRequest,
+  loadStateSuccess,
+  loadStateFailure,
+  saveStateRequest,
+  saveStateSuccess,
+  saveStateFailure,
+  clearStateRequest,
+  clearStateSuccess,
+  clearStateFailure
+};
 
-export type loadStateFn = () => Promise<{}>;
-export function loadState() {
-    // todo: this works for dispatch promise typing, but isn't really right
-    return <LoadStateRequest & Promise<{}>>{ type: LOAD_STATE_REQUEST };
-}
-
-export const SAVE_STATE_REQUEST = '@@redux-simple-persist/SAVE_STATE_REQUEST';
-export const SAVE_STATE_SUCCESS = '@@redux-simple-persist/SAVE_STATE_SUCCESS';
-export const SAVE_STATE_FAILURE = '@@redux-simple-persist/SAVE_STATE_FAILURE';
-
-export interface SaveStateRequest {
-    type: typeof SAVE_STATE_REQUEST;
-    rules?: SimplePersistRule[];
-}
-
-export interface SaveStateSuccess {
-    type: typeof SAVE_STATE_SUCCESS;
-}
-
-export interface SaveStateFailure {
-    type: typeof SAVE_STATE_FAILURE;
-    err: any;
-}
-
-export type SaveStateType = SaveStateRequest | SaveStateSuccess | SaveStateFailure;
-
-export type saveStateFn = <TState>(rules?: SimplePersistRule<TState>[]) => Promise<{}>;
-export function saveState<TState>(rules?: SimplePersistRule<TState>[]) {
-    return <SaveStateRequest & Promise<{}>>{ type: SAVE_STATE_REQUEST, rules };
-}
-
-export const CLEAR_STATE_REQUEST = 'CLEAR_STATE_REQUEST';
-export const CLEAR_STATE_SUCCESS = 'CLEAR_STATE_SUCCESS';
-export const CLEAR_STATE_FAILURE = 'CLEAR_STATE_FAILURE';
-
-export interface ClearStateRequest {
-    type: typeof CLEAR_STATE_REQUEST;
-}
-
-export interface ClearStateSuccess {
-    type: typeof CLEAR_STATE_SUCCESS;
-}
-
-export interface ClearStateFailure {
-    type: typeof CLEAR_STATE_FAILURE;
-    err: any;
-}
-
-export type ClearStateType = ClearStateRequest | ClearStateSuccess | ClearStateFailure;
-
-export type clearStateFn = () => Promise<{}>;
-export function clearState() {
-    return <ClearStateSuccess & Promise<{}>>{ type: CLEAR_STATE_SUCCESS };
-}
-
-export type ActionType = LoadStateType | SaveStateType | ClearStateType;
+export type ActionTypes = ActionType<typeof actions>;

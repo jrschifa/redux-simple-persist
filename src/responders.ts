@@ -1,45 +1,54 @@
-import { Store, AnyAction } from 'redux';
+import { Store } from 'redux';
 import { SimplePersistOptions, MapToStateThunk } from './models';
-import * as PersistActions from './actions';
+import { actions, ActionTypes } from './actions';
 import { loadStateFromStorage, saveStateToStorage, clearStateInStorage } from './storage';
 
 // TODO: not an ideal return type for this
 export const createResponders = <TState>(store: Store<TState>, opts: SimplePersistOptions<TState>): { [type: string]: ((action: any) => any) } => {
     return {
-        [PersistActions.LOAD_STATE_REQUEST]: async (action: PersistActions.LoadStateRequest) => {
-            let state: Partial<TState>, thunks: MapToStateThunk<TState>[];
-            try {
-                [state, thunks] = await loadStateFromStorage(opts);
-            } catch (err) {
-                store.dispatch({ type: PersistActions.LOAD_STATE_FAILURE, err });
-                throw err;
-            }
-            store.dispatch({ type: PersistActions.LOAD_STATE_SUCCESS, state });
-            thunks.forEach(thunk => thunk(store.dispatch, store.getState));
+        '@@redux-simple-persist/LOAD_STATE_REQUEST': (action: ReturnType<typeof actions.loadStateRequest>) => {
+            return new Promise(async (resolve, reject) => {
+                let state: Partial<TState>, thunks: MapToStateThunk<TState>[];
+                try {
+                    [state, thunks] = await loadStateFromStorage(opts);
+                    thunks.forEach(thunk => thunk(store.dispatch, store.getState));
+                    resolve(state);
+                } catch (err) {
+                    reject(err);
+                }
+            })
+            .then((state) => actions.loadStateSuccess(state))
+            .catch((err) => { actions.loadStateFailure(err); throw err; });
         },
-        [PersistActions.LOAD_STATE_SUCCESS]: (action: PersistActions.LoadStateSuccess) => action,
-        [PersistActions.LOAD_STATE_FAILURE]: (action: PersistActions.LoadStateFailure) => action,
-        [PersistActions.SAVE_STATE_REQUEST]: async (action: PersistActions.SaveStateRequest) => {
-            try {
-                await saveStateToStorage({ ...opts, rules: action.rules || opts.rules }, store.getState());
-            } catch (err) {
-                store.dispatch({ type: PersistActions.SAVE_STATE_FAILURE, err });
-                throw err;
-            }
-            store.dispatch({ type: PersistActions.SAVE_STATE_SUCCESS });
+        '@@redux-simple-persist/LOAD_STATE_SUCCESS': (action: ReturnType<typeof actions.loadStateSuccess>) => action,
+        '@@redux-simple-persist/LOAD_STATE_FAILURE': (action: ReturnType<typeof actions.loadStateFailure>) => action,
+        '@@redux-simple-persist/SAVE_STATE_REQUEST': (action: ReturnType<typeof actions.saveStateRequest>) => {
+            return new Promise((resolve, reject) => {
+                try {
+                    saveStateToStorage({ ...opts, rules: action.payload || opts.rules }, store.getState());
+                    resolve();
+                } catch (err) {
+                    reject(err);
+                }
+            })
+            .then(() => store.dispatch(actions.saveStateSuccess()))
+            .catch((err) => { store.dispatch(actions.saveStateFailure(err)); throw err; });
         },
-        [PersistActions.SAVE_STATE_SUCCESS]: (action: PersistActions.SaveStateSuccess) => action,
-        [PersistActions.SAVE_STATE_FAILURE]: (action: PersistActions.SaveStateFailure) => action,
-        [PersistActions.CLEAR_STATE_REQUEST]: async (action: PersistActions.ClearStateRequest) => {
-            try {
-                await clearStateInStorage(opts);
-            } catch (err) {
-                store.dispatch({ type: PersistActions.CLEAR_STATE_FAILURE, err });
-                throw err;
-            }
-            store.dispatch({ type: PersistActions.CLEAR_STATE_SUCCESS });
+        '@@redux-simple-persist/SAVE_STATE_SUCCESS': (action: ReturnType<typeof actions.saveStateSuccess>) => action,
+        '@@redux-simple-persist/SAVE_STATE_FAILURE': (action: ReturnType<typeof actions.saveStateFailure>) => action,
+        '@@redux-simple-persist/CLEAR_STATE_REQUEST': (action: ReturnType<typeof actions.clearStateRequest>) => {
+            return new Promise((resolve, reject) => {
+                try {
+                    clearStateInStorage(opts);
+                    resolve();
+                } catch (err) {
+                    reject(err);
+                }
+            })
+            .then(() => store.dispatch(actions.clearStateSuccess()))
+            .catch((err) => {actions.clearStateFailure(err); throw err; });
         },
-        [PersistActions.CLEAR_STATE_SUCCESS]: (action: PersistActions.ClearStateSuccess) => action,
-        [PersistActions.CLEAR_STATE_FAILURE]: (action: PersistActions.ClearStateFailure) => action
+        '@@redux-simple-persist/CLEAR_STATE_SUCCESS': (action: ReturnType<typeof actions.clearStateSuccess>) => action,
+        '@@redux-simple-persist/CLEAR_STATE_FAILURE': (action: ReturnType<typeof actions.clearStateFailure>) => action
     };
 };

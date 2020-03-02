@@ -2,9 +2,8 @@ import { assertUniqueKeysOnRules } from './utils';
 import { SimplePersistOptions } from './models';
 import { Store, Dispatch, AnyAction } from 'redux';
 import { createResponders } from './responders';
-import { loadState } from './actions';
+import { actions, ActionTypes } from './actions';
 import { createRuleEngine } from './rules';
-import * as PersistActions from './actions';
 
 export const persistMiddleware = <TState>(opts: SimplePersistOptions<TState>) => {
     assertUniqueKeysOnRules(opts.rules);
@@ -13,12 +12,12 @@ export const persistMiddleware = <TState>(opts: SimplePersistOptions<TState>) =>
         const responders = createResponders(store, opts);
 
         if (opts.loadOnStart) {
-            setImmediate(() => store.dispatch(loadState()));
+            setImmediate(() => store.dispatch(actions.loadStateRequest()));
         }
 
         const runPersistenceRules = createRuleEngine(store, opts);
 
-        return (next: Dispatch) => (action: PersistActions.ActionType) => {
+        return (next: Dispatch) => (action: ActionTypes) => {
             if (responders[action.type]) {
                 const res = responders[action.type](action);
                 next(action);

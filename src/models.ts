@@ -1,10 +1,7 @@
 import { Dispatch } from 'redux';
+import * as LocalForage from 'localforage';
 
-export interface SimplePersistStorage {
-    getItem: (key: string) => Promise<string>;
-    setItem: (key: string, value: string) => Promise<void>;
-    removeItem: (key: string) => Promise<void>;
-}
+export interface SimplePersistStorage extends LocalForageOptions {}
 
 export interface MapToStateThunk<TState> {
     (dispatch: Dispatch, getState: () => TState): void;
@@ -42,4 +39,8 @@ export interface SimplePersistOptions<TState = any> {
 
 export interface RuleMap<TState = any> {
     [key: string]: SimplePersistRule<TState>;
+}
+
+export interface StorageMap {
+    [key: string]: LocalForage;
 }

@@ -1,6 +1,6 @@
 import { Store } from "redux";
 import { SimplePersistOptions } from './models';
-import { saveState } from './actions';
+import { actions } from './actions';
 
 export const createRuleEngine = <TState>(store: Store<TState>, { rules, defer }: SimplePersistOptions<TState>) => {
     const persisting: { [key: string]: number } = {};
@@ -13,7 +13,7 @@ export const createRuleEngine = <TState>(store: Store<TState>, { rules, defer }:
                 }
                 persisting[rule.key] = setTimeout(() => {
                     persisting[rule.key] = 0;
-                    store.dispatch(saveState([rule]));
+                    store.dispatch(actions.saveStateRequest([rule]));
                 }, defer);
             }
         });
