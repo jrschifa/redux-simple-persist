@@ -21,7 +21,7 @@ export const persistReducer = <TState>(reducer: Reducer<TState>) => {
         switch (action.type) {
             case '@@redux-simple-persist/LOAD_STATE_SUCCESS': {
                 emitBeginStateMerge();
-                const nextState = mergeState(prevState, action.payload);
+                const nextState = mergeState(prevState, (action as any).payload);
                 emitEndStateMerge();
                 return nextState;
             }
