@@ -19,6 +19,7 @@ const storageMap: StorageMap = {};
 function createStorageInstance(key: string, options: SimplePersistStorage) {
     const storageInstance = localForage.createInstance(options);
     storageMap[key] = storageInstance;
+    return storageInstance;
 }
 
 export async function loadStateFromStorage<TState>({ rules, storage: defaultStorage }: SimplePersistOptions<TState>): Promise<[Partial<TState>, MapToStateThunk<TState>[]]> {
