@@ -42,8 +42,7 @@
     "type": "git",
     "url": "https://github.com/ryverapp/react-native-notifications"
   },
-  "main": "index.js",
-  "typings": "./index.d.ts",
+  "main": "src/main.ts",
   "scripts": {
     "link-package": "yarn build && cd ./build && yarn install && yarn link",
     "red-marker": "tsc --noEmit --watch --pretty",
