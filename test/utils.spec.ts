@@ -1,5 +1,5 @@
-import { isPlainObject, mergeState, assertUniqueKeysOnRules } from '../utils';
-import { SimplePersistRule } from '../models';
+import { SimplePersistRule } from '@/models';
+import { assertUniqueKeysOnRules, isPlainObject, mergeState } from '@/utils';
 
 describe('utils', () => {
   it('isPlainObject should return true', () => {
@@ -14,17 +14,17 @@ describe('utils', () => {
 
   it('mergeState should return a new merged state', () => {
     const emptyState = null;
-    const prevState = { 'key1': { 'innerKey1': 'innerValue1' } } as any;
-    const nextState = { 'key1': { 'innerKey2': 'innerValue2' }, 'key2': 'value2', 'key3': 'value3' } as any;
+    const prevState = { key1: { innerKey1: 'innerValue1' } } as any;
+    const nextState = { key1: { innerKey2: 'innerValue2' }, key2: 'value2', key3: 'value3' } as any;
 
-    expect(mergeState<any>(emptyState, nextState)).toEqual(nextState);
-    expect(mergeState<any>(prevState, nextState)).toEqual({
+    expect(mergeState<any, any>(emptyState, nextState)).toEqual(nextState);
+    expect(mergeState<any, any>(prevState, nextState)).toEqual({
       ...prevState,
       ...nextState,
-      'key1': {
+      key1: {
         ...prevState.key1,
-        ...nextState.key1
-      }
+        ...nextState.key1,
+      },
     });
   });
 

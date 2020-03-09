@@ -6,7 +6,8 @@
     "@babel/runtime": "^7.4.0",
     "events": "^3.0.0",
     "localforage": "^1.7.3",
-    "redux": "^4.0.0"
+    "redux": "^4.0.0",
+    "redux-thunk": "^2.3.0"
   },
   "devDependencies": {
     "@babel/cli": "7.4.3",
@@ -16,22 +17,23 @@
     "@babel/plugin-transform-runtime": "7.4.3",
     "@babel/preset-env": "7.4.3",
     "@babel/preset-typescript": "7.3.3",
-    "@types/chai": "4.1.7",
+    "@jedmao/redux-mock-store": "^2.0.3",
     "@types/enzyme": "3.9.1",
-    "@types/mocha": "5.2.6",
+    "@types/jest": "^24.0.23",
     "@types/node": "11.13.4",
-    "chai": "4.2.0",
+    "babel-jest": "24.8.0",
+    "babel-plugin-module-resolver": "^3.2.0",
     "concurrently": "4.1.0",
     "cross-env": "5.2.0",
     "fs-extra": "7.0.1",
     "glob": "7.1.3",
-    "mocha": "6.1.3",
+    "jest": "24.9.0",
     "rimraf": "2.6.3",
     "ts-node": "8.0.3",
+    "ts-jest": "^24.2.0",
     "tslib": "^1.11.1",
-    "tslint": "5.15.0",
-    "tslint-eslint-rules": "5.4.0",
-    "tslint-microsoft-contrib": "6.1.0",
+    "tslint": "^5.20.1",
+    "tslint-eslint-rules": "^5.4.0",
     "typescript": "3.7.4"
   },
   "author": {
@@ -41,12 +43,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ryverapp/react-native-notifications"
+    "url": "https://github.com/ryverapp/redux-simple-persist"
   },
   "main": "src/main.ts",
   "scripts": {
     "link-package": "yarn build && cd ./build && yarn install && yarn link",
-    "red-marker": "tsc --noEmit --watch --pretty",
+    "watch:tsc": "tsc --noEmit --watch --pretty",
     "watch:babel": "yarn build:cjs --watch --verbose",
     "watch:types": "yarn build:dts --watch --preserveWatchOutput",
     "watch": "concurrently npm:watch:*",

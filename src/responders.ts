@@ -1,17 +1,20 @@
-import { Store } from 'redux';
-import { SimplePersistOptions, MapToStateThunk } from './models';
-import { actions, ActionTypes } from './actions';
-import { loadStateFromStorage, saveStateToStorage, clearStateInStorage } from './storage';
+import { AnyAction, MiddlewareAPI } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
+import { actions } from './actions';
+import { MapToStateThunk, SimplePersistOptions } from './models';
+import { clearStateInStorage, loadStateFromStorage, saveStateToStorage } from './storage';
 
 // TODO: not an ideal return type for this
-export const createResponders = <TState>(store: Store<TState>, opts: SimplePersistOptions<TState>): { [type: string]: ((action: any) => any) } => {
+export const createResponders = <TState>(store: MiddlewareAPI<ThunkDispatch<TState, undefined, AnyAction>, TState>, opts: SimplePersistOptions<TState>): { [type: string]: ((action: any) => any) } => {
     return {
         '@@redux-simple-persist/LOAD_STATE_REQUEST': (action: ReturnType<typeof actions.loadStateRequest>) => {
             return new Promise(async (resolve, reject) => {
-                let state: Partial<TState>, thunks: MapToStateThunk<TState>[];
+                let state: Partial<TState>;
+                let thunks: Array<MapToStateThunk<TState>>;
+
                 try {
                     [state, thunks] = await loadStateFromStorage(opts);
-                    thunks.forEach(thunk => thunk(store.dispatch, store.getState));
+                    thunks.forEach((thunk) => thunk(store.dispatch, store.getState));
                     resolve(state);
                 } catch (err) {
                     reject(err);
@@ -49,6 +52,6 @@ export const createResponders = <TState>(store: Store<TState>, opts: SimplePersi
             .catch((err) => {actions.clearStateFailure(err); throw err; });
         },
         '@@redux-simple-persist/CLEAR_STATE_SUCCESS': (action: ReturnType<typeof actions.clearStateSuccess>) => action,
-        '@@redux-simple-persist/CLEAR_STATE_FAILURE': (action: ReturnType<typeof actions.clearStateFailure>) => action
+        '@@redux-simple-persist/CLEAR_STATE_FAILURE': (action: ReturnType<typeof actions.clearStateFailure>) => action,
     };
 };

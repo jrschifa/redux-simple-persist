@@ -1,5 +1,5 @@
-import { loadStateFromStorage, saveStateToStorage, clearStateInStorage } from '../storage';
-import { SimplePersistRule, SimplePersistOptions } from '../models';
+import { SimplePersistOptions, SimplePersistRule } from '@/models';
+import { clearStateInStorage, loadStateFromStorage, saveStateToStorage } from '@/storage';
 
 describe('storage', () => {
   const mockRule = {
@@ -7,30 +7,30 @@ describe('storage', () => {
     shouldPersist: jest.fn(() => true),
     mapToState: jest.fn((state) => state),
     mapToStorage: jest.fn((state) => state),
-    storage: window.localStorage
+    storage: window.localStorage,
   } as SimplePersistRule;
 
   const mockOptions = {
-    rules: [ mockRule ]
+    rules: [ mockRule ],
   } as SimplePersistOptions;
 
-  it('should saveStateToStorage', () => {
-    const nextState = { 'foo': 'bar' };
+  it('should saveStateToStorage', async () => {
+    const nextState = { foo: 'bar' };
     saveStateToStorage(mockOptions, nextState);
-    const [state, thunk] = loadStateFromStorage(mockOptions);
+    const [state, thunk] = await loadStateFromStorage(mockOptions);
     expect(state).toMatchObject(nextState);
   });
 
-  it('should saveStateToStorage with default storage', () => {
-    const nextState = { 'foo': 'bar' };
+  it('should saveStateToStorage with default storage', async () => {
+    const nextState = { foo: 'bar' };
     saveStateToStorage({
       ...mockOptions,
       rules: [{
         ...mockRule,
-        storage: undefined
-      }]
+        storage: undefined,
+      }],
     }, nextState);
-    const [state, thunk] = loadStateFromStorage(mockOptions);
+    const [state, thunk] = await loadStateFromStorage(mockOptions);
     expect(state).toMatchObject(nextState);
   });
 
@@ -44,8 +44,8 @@ describe('storage', () => {
       ...mockOptions,
       rules: [{
         ...mockRule,
-        storage: undefined
-      }]
+        storage: undefined,
+      }],
     });
 
     expect(window.localStorage.getItem('mock')).toBeNull();

@@ -21,12 +21,9 @@
         ],
         "types": [
             "node"
-        ]
-    },    
-    "include": [
-        "src/**/*.ts",
-        "src/**/*.tsx",
-        "typings/**/*.d.ts",
-        "package.json"
-    ]    
+        ],
+        "paths": {
+        "@/*": ["./src/*"]
+        }
+    }  
 }

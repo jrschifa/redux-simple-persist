@@ -1,11 +1,10 @@
-import { Dispatch } from 'redux';
 import * as LocalForage from 'localforage';
+import { Dispatch } from 'redux';
 
+// tslint:disable-next-line: no-empty-interface
 export interface SimplePersistStorage extends LocalForageOptions {}
 
-export interface MapToStateThunk<TState> {
-    (dispatch: Dispatch, getState: () => TState): void;
-}
+export type MapToStateThunk<TState> = (dispatch: Dispatch, getState: () => TState) => void;
 
 export interface SimplePersistRule<TState = any> {
     /**
@@ -31,10 +30,10 @@ export interface SimplePersistRule<TState = any> {
 }
 
 export interface SimplePersistOptions<TState = any> {
-    rules: SimplePersistRule<TState>[];
+    rules: Array<SimplePersistRule<TState>>;
     defer?: number;
     loadOnStart?: boolean;
-    storage: SimplePersistStorage;
+    storage?: SimplePersistStorage;
 }
 
 export interface RuleMap<TState = any> {

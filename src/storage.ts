@@ -1,7 +1,7 @@
 import * as localForage from 'localforage';
-import { SimplePersistOptions, MapToStateThunk, SimplePersistRule, StorageMap, SimplePersistStorage } from './models';
-import { mergeState } from './utils';
 import * as $E from './events';
+import { MapToStateThunk, SimplePersistOptions, SimplePersistRule, SimplePersistStorage, StorageMap } from './models';
+import { mergeState } from './utils';
 
 const emitBeginLoad = () => $E.persistanceEvents.emit($E.BEGIN_LOAD);
 const emitEndLoad = () => $E.persistanceEvents.emit($E.END_LOAD);
@@ -16,15 +16,15 @@ const emitEndSaveRule = (rule: SimplePersistRule) => $E.persistanceEvents.emit($
 
 const storageMap: StorageMap = {};
 
-function createStorageInstance(key: string, options: SimplePersistStorage) {
+function createStorageInstance(key: string, options: SimplePersistStorage = {}) {
     const storageInstance = localForage.createInstance(options);
     storageMap[key] = storageInstance;
     return storageInstance;
 }
 
-export async function loadStateFromStorage<TState>({ rules, storage: defaultStorage }: SimplePersistOptions<TState>): Promise<[Partial<TState>, MapToStateThunk<TState>[]]> {
+export async function loadStateFromStorage<TState>({ rules, storage: defaultStorage }: SimplePersistOptions<TState>): Promise<[Partial<TState>, Array<MapToStateThunk<TState>>]> {
     emitBeginLoad();
-    type R = [Partial<TState>, MapToStateThunk<TState>[]];
+    type R = [Partial<TState>, Array<MapToStateThunk<TState>>];
     try {
         const reads = rules.map((rule: SimplePersistRule) => {
             const storage = storageMap[rule.key] ?? createStorageInstance(rule.key, rule.storage ?? defaultStorage);
@@ -53,7 +53,7 @@ export async function saveStateToStorage<TState>({ rules, storage: defaultStorag
     emitBeginSave();
     try {
         const writes = rules.map((rule: SimplePersistRule) => {
-            const storage = storageMap[rule.key] ?? createStorageInstance(rule.key, rule.storage ?? defaultStorage);            
+            const storage = storageMap[rule.key] ?? createStorageInstance(rule.key, rule.storage ?? defaultStorage);
             emitBeginSaveRule(rule);
             const data = rule.mapToStorage(state);
             const raw = JSON.stringify(data);
@@ -72,9 +72,10 @@ export async function clearStateInStorage<TState>({ rules, storage: defaultStora
     try {
         const deletes = rules.map((rule: SimplePersistRule) => {
             const storage = storageMap[rule.key] ?? createStorageInstance(rule.key, rule.storage ?? defaultStorage);
-            storage.removeItem(rule.key)
+            storage.removeItem(rule.key);
         });
         await Promise.all(deletes);
     } catch (err) {
+        console.error(err);
     }
 }

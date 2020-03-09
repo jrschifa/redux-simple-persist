@@ -1,5 +1,5 @@
-import { ActionTypes } from './actions';
 import { Reducer } from 'redux';
+import { ActionTypes } from './actions';
 import * as $E from './events';
 import { mergeState } from './utils';
 

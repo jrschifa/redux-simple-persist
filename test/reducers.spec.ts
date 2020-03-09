@@ -1,26 +1,27 @@
 import { AnyAction, combineReducers } from 'redux';
 
-import * as PersistActions from '../actions';
-import { persistReducer } from '../reducers';
+import { actions } from '@/actions';
+import { persistReducer } from '@/reducers';
 
-type EmptyObject = {};
+const EMPTY = {};
+type EmptyObject = typeof EMPTY;
 
 describe('reducer', () => {
   const reducer = persistReducer(combineReducers<EmptyObject, AnyAction>({}));
 
   it('should return the initial state', () => {
-    expect(reducer(undefined, {} as AnyAction)).toMatchObject({});
+    expect(reducer({}, {} as AnyAction)).toMatchObject({});
   });
 
   it('should handle LOAD_STATE_SUCCESS', () => {
-    const mockLoadStateSuccessAction: PersistActions.LoadStateSuccess = {
-      type: PersistActions.LOAD_STATE_SUCCESS,
-      state: { 'foo': 'bar' }
-    };
+    const mockLoadStateSuccessAction = {
+      type: '@@redux-simple-persist/LOAD_STATE_SUCCESS',
+      payload: { foo: 'bar' },
+    } as ReturnType<typeof actions.loadStateSuccess>;
 
-    expect(reducer(undefined, mockLoadStateSuccessAction))
+    expect(reducer({}, mockLoadStateSuccessAction))
       .toEqual({
-        ...mockLoadStateSuccessAction.state,
+        ...(mockLoadStateSuccessAction as any).payload,
       });
   });
 });

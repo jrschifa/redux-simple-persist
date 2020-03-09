@@ -1,14 +1,13 @@
 import configureMockStore from '@jedmao/redux-mock-store';
-import thunk, { ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from 'redux';
+import thunk, { ThunkDispatch } from 'redux-thunk';
 
-import * as PersistActions from '../actions';
-import { createRuleEngine } from '../rules';
-import { persistMiddleware } from '../middlewares';
-import { SimplePersistRule, SimplePersistOptions } from '../models';
+import { persistMiddleware } from '@/middlewares';
+import { SimplePersistOptions, SimplePersistRule } from '@/models';
+import { createRuleEngine } from '@/rules';
 
 export interface CreateMockStoreOptions {
-  rules: SimplePersistRule<any>[];
+  rules: Array<SimplePersistRule<any>>;
 }
 
 export function createMockStore(opts?: CreateMockStoreOptions) {
@@ -26,12 +25,12 @@ describe('rules', () => {
     shouldPersist: jest.fn(() => true),
     mapToState: jest.fn((state) => state),
     mapToStorage: jest.fn((state) => state),
-    storage: window.localStorage
+    storage: window.localStorage,
   } as SimplePersistRule;
 
   const mockOptions = {
     rules: [ mockRule ],
-    defer: 500
+    defer: 500,
   } as SimplePersistOptions;
 
   const mockStore = createMockStore(mockOptions);
@@ -48,8 +47,8 @@ describe('rules', () => {
     expect(spy).toBeCalled();
 
     const expectedActions = [
-      { type: PersistActions.SAVE_STATE_REQUEST, rules: [mockRule] } as PersistActions.SaveStateRequest,
-      { type: PersistActions.SAVE_STATE_SUCCESS } as PersistActions.SaveStateSuccess
+      { type: '@@redux-simple-persist/SAVE_STATE_REQUEST', rules: [mockRule] },
+      { type: '@@redux-simple-persist/SAVE_STATE_SUCCESS' },
     ];
 
     setTimeout(() => {

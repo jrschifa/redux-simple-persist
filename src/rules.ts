@@ -1,8 +1,9 @@
-import { Store } from "redux";
-import { SimplePersistOptions } from './models';
+import { AnyAction, MiddlewareAPI } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
 import { actions } from './actions';
+import { SimplePersistOptions } from './models';
 
-export const createRuleEngine = <TState>(store: Store<TState>, { rules, defer }: SimplePersistOptions<TState>) => {
+export const createRuleEngine = <TState>(store: MiddlewareAPI<ThunkDispatch<TState, undefined, AnyAction>, TState>, { rules, defer }: SimplePersistOptions<TState>) => {
     const persisting: { [key: string]: number } = {};
 
     return (prevState: TState, nextState: TState) => {

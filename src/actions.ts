@@ -1,6 +1,6 @@
 import { SimplePersistRule } from './models';
 
-import { createAction, ActionType } from './utils';
+import { ActionType, createAction } from './utils';
 
 const loadStateRequest = createAction('@@redux-simple-persist/LOAD_STATE_REQUEST');
 const loadStateSuccess = createAction('@@redux-simple-persist/LOAD_STATE_SUCCESS', (state: any) => state);
@@ -23,7 +23,7 @@ export const actions = {
   saveStateFailure,
   clearStateRequest,
   clearStateSuccess,
-  clearStateFailure
+  clearStateFailure,
 };
 
 export type ActionTypes = ActionType<typeof actions>;

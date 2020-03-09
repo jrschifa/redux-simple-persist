@@ -1,0 +1,26 @@
+{
+  "extends": [
+    "tslint:recommended",
+    "tslint-eslint-rules"
+  ],
+  "rules": {
+    "interface-name": false,
+    "max-line-length": [
+      true, 
+      200
+    ],
+    "no-bitwise": false,
+    "no-console": [
+      true,
+      "log"
+    ],
+    "object-literal-sort-keys": false,
+    "quotemark": [
+      true,
+      "single",
+      "jsx-single",
+      "backtick",
+      "avoid-escape"
+    ]
+  }
+}

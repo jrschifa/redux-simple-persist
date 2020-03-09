@@ -1,68 +1,41 @@
-import configureMockStore from '@jedmao/redux-mock-store';
-import thunk, { ThunkDispatch } from 'redux-thunk';
-import { AnyAction } from 'redux';
-
-import * as PersistActions from '../actions';
-import { persistMiddleware } from '../middlewares';
-import { SimplePersistRule, SimplePersistOptions } from '../models';
-
-export interface CreateMockStoreOptions {
-  rules: SimplePersistRule<any>[];
-}
-
-export function createMockStore(opts?: CreateMockStoreOptions) {
-  const rules = opts ? opts.rules : [];
-  const mockMiddlewares = [thunk, persistMiddleware({ rules })];
-  const mockStore: any = configureMockStore<any, AnyAction, ThunkDispatch<any, any, AnyAction>>(mockMiddlewares);
-  return mockStore;
-}
-
-export default createMockStore;
+import { actions } from '@/actions';
+import { getMockStore } from './utils';
 
 describe('actions', () => {
-  let store: any;
-
-  const mockRule = {
-    key: 'mock',
-    shouldPersist: jest.fn(() => true),
-    mapToState: jest.fn((state) => state),
-    mapToStorage: jest.fn((state) => state),
-    storage: window.localStorage
-  } as SimplePersistRule;
-
-  const mockOptions = {
-    rules: [ mockRule ]
-  } as SimplePersistOptions;
-
-  const mockStore = createMockStore(mockOptions);
-
-  beforeEach(() => {
-    store = mockStore({ });
+  const mockStore = getMockStore({
+    rules: [{
+      key: 'mock',
+      shouldPersist: jest.fn(() => true),
+      mapToState: jest.fn((state) => state),
+      mapToStorage: jest.fn((state) => state),
+    }],
   });
 
-  it('should load state from stoarge', (done) => {
+  it('should load state from storage', (done) => {
     const expectedActions = [
-      { type: PersistActions.LOAD_STATE_REQUEST } as PersistActions.LoadStateRequest,
-      { type: PersistActions.LOAD_STATE_SUCCESS, state: {} } as PersistActions.LoadStateSuccess
+      { type: '@@redux-simple-persist/LOAD_STATE_REQUEST' },
+      { type: '@@redux-simple-persist/LOAD_STATE_SUCCESS', state: {} },
     ];
 
-    return store.dispatch(PersistActions.loadState())
+    const store: any = mockStore({});
+    return store.dispatch(actions.loadStateRequest())
       .then(() => {
         expect(store.getActions()).toEqual(expectedActions);
         done();
       });
   });
 
-  it('should fail to load state from stoarge', (done) => {
+  it('should fail to load state from storage', (done) => {
     const mockError = new Error();
     const expectedActions = [
-      { type: PersistActions.LOAD_STATE_REQUEST } as PersistActions.LoadStateRequest,
-      { type: PersistActions.LOAD_STATE_FAILURE, err: mockError } as PersistActions.LoadStateFailure
+      { type: '@@redux-simple-persist/LOAD_STATE_REQUEST' },
+      { type: '@@redux-simple-persist/LOAD_STATE_FAILURE', err: mockError },
     ];
 
     Storage.prototype.getItem = jest.fn(() => { throw mockError; });
 
-    return store.dispatch(PersistActions.loadState())
+    const store: any = mockStore({});
+    return store.dispatch(actions.loadStateRequest())
       .catch(() => {
         expect(store.getActions()).toEqual(expectedActions);
         done();
@@ -71,11 +44,12 @@ describe('actions', () => {
 
   it('should save state to storage', (done) => {
     const expectedActions = [
-      { type: PersistActions.SAVE_STATE_REQUEST, rules: [] } as PersistActions.SaveStateRequest,
-      { type: PersistActions.SAVE_STATE_SUCCESS } as PersistActions.SaveStateSuccess
+      { type: '@@redux-simple-persist/SAVE_STATE_REQUEST', rules: [] },
+      { type: '@@redux-simple-persist/SAVE_STATE_SUCCESS' },
     ];
 
-    return store.dispatch(PersistActions.saveState([]))
+    const store: any = mockStore({});
+    return store.dispatch(actions.saveStateRequest([]))
       .then(() => {
         expect(store.getActions()).toEqual(expectedActions);
         done();
@@ -85,13 +59,14 @@ describe('actions', () => {
   it('should fail to save state to storage', (done) => {
     const mockError = new Error();
     const expectedActions = [
-      { type: PersistActions.SAVE_STATE_REQUEST } as PersistActions.SaveStateRequest,
-      { type: PersistActions.SAVE_STATE_FAILURE, err: mockError } as PersistActions.SaveStateFailure
+      { type: '@@redux-simple-persist/SAVE_STATE_REQUEST' },
+      { type: '@@redux-simple-persist/SAVE_STATE_FAILURE', err: mockError },
     ];
 
     Storage.prototype.setItem = jest.fn(() => { throw mockError; });
 
-    return store.dispatch(PersistActions.saveState())
+    const store: any = mockStore({});
+    return store.dispatch(actions.saveStateRequest())
       .catch(() => {
         expect(store.getActions()).toEqual(expectedActions);
         done();
@@ -100,11 +75,12 @@ describe('actions', () => {
 
   it('should clear storage', (done) => {
     const expectedActions = [
-      { type: PersistActions.CLEAR_STATE_REQUEST } as PersistActions.ClearStateRequest,
-      { type: PersistActions.CLEAR_STATE_SUCCESS } as PersistActions.ClearStateSuccess
+      { type: '@@redux-simple-persist/CLEAR_STATE_REQUEST' },
+      { type: '@@redux-simple-persist/CLEAR_STATE_SUCCESS' },
     ];
 
-    return store.dispatch(PersistActions.clearState())
+    const store: any = mockStore({});
+    return store.dispatch(actions.clearStateRequest())
       .then(() => {
         expect(store.getActions()).toEqual(expectedActions);
         done();
@@ -114,13 +90,14 @@ describe('actions', () => {
   it('should fail to clear storage', (done) => {
     const mockError = new Error();
     const expectedActions = [
-      { type: PersistActions.CLEAR_STATE_REQUEST } as PersistActions.ClearStateRequest,
-      { type: PersistActions.CLEAR_STATE_FAILURE, err: mockError } as PersistActions.ClearStateFailure
+      { type: '@@redux-simple-persist/CLEAR_STATE_REQUEST' },
+      { type: '@@redux-simple-persist/CLEAR_STATE_FAILURE', err: mockError },
     ];
 
     Storage.prototype.removeItem = jest.fn(() => { throw mockError; });
 
-    return store.dispatch(PersistActions.clearState())
+    const store: any = mockStore({});
+    return store.dispatch(actions.clearStateRequest())
       .catch(() => {
         expect(store.getActions()).toEqual(expectedActions);
         done();

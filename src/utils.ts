@@ -1,4 +1,4 @@
-import { SimplePersistRule } from "./models";
+import { SimplePersistRule } from './models';
 
 export type Action<T extends string, P extends any = undefined> = (
 P extends undefined
@@ -23,7 +23,7 @@ return <RP extends any = any>(rawPayload?: RP) => {
 }
 
 type ActionDispatch = ReturnType<typeof createAction>;
-type ActionObject = { [key: string]: any };
+interface ActionObject { [key: string]: any; }
 type ParseAction<TType extends any = any> = TType extends ActionDispatch ? ReturnType<TType> : TType;
 
 export type ActionType<TType extends any = any> = (
@@ -47,15 +47,15 @@ export function isPlainObject(obj: any) {
 
 export function mergeState<S, P extends keyof S>(prevState: S, restState: Partial<S>): Partial<S> {
     const nextState: Partial<S> = { ...prevState };
-    return Object.entries(restState).reduce((nextState, [prop, value]) => (
-        nextState[<P>prop] = isPlainObject(value) ? mergeState(nextState[<P>prop], value as any) : value as any,
-        nextState
+    return Object.entries(restState).reduce((nextRestState, [prop, value]) => (
+        nextRestState[prop as P] = isPlainObject(value) ? mergeState(nextRestState[prop as P], value as any) : value as any,
+        nextRestState
     ), nextState);
 }
 
-export function assertUniqueKeysOnRules<S>(rules: SimplePersistRule<S>[]) {
+export function assertUniqueKeysOnRules<S>(rules: Array<SimplePersistRule<S>>) {
     const test: { [key: string]: boolean } = {};
-    if (rules.some(rule => test[rule.key] || (test[rule.key] = true, false))) {
+    if (rules.some((rule) => test[rule.key] || (test[rule.key] = true, false))) {
         throw new Error('Keys must be unique between rules.');
     }
 }
