@@ -20,15 +20,15 @@ export const createResponders = <TState>(store: MiddlewareAPI<ThunkDispatch<TSta
                     reject(err);
                 }
             })
-            .then((state) => actions.loadStateSuccess(state))
-            .catch((err) => { actions.loadStateFailure(err); throw err; });
+            .then((state) => store.dispatch(actions.loadStateSuccess(state)))
+            .catch((err) => { store.dispatch(actions.loadStateFailure(err)); throw err; });
         },
         '@@redux-simple-persist/LOAD_STATE_SUCCESS': (action: ReturnType<typeof actions.loadStateSuccess>) => action,
         '@@redux-simple-persist/LOAD_STATE_FAILURE': (action: ReturnType<typeof actions.loadStateFailure>) => action,
         '@@redux-simple-persist/SAVE_STATE_REQUEST': (action: ReturnType<typeof actions.saveStateRequest>) => {
-            return new Promise((resolve, reject) => {
+            return new Promise(async (resolve, reject) => {
                 try {
-                    saveStateToStorage({ ...opts, rules: action.payload || opts.rules }, store.getState());
+                    await saveStateToStorage({ ...opts, rules: action.payload || opts.rules }, store.getState());
                     resolve();
                 } catch (err) {
                     reject(err);
@@ -40,16 +40,16 @@ export const createResponders = <TState>(store: MiddlewareAPI<ThunkDispatch<TSta
         '@@redux-simple-persist/SAVE_STATE_SUCCESS': (action: ReturnType<typeof actions.saveStateSuccess>) => action,
         '@@redux-simple-persist/SAVE_STATE_FAILURE': (action: ReturnType<typeof actions.saveStateFailure>) => action,
         '@@redux-simple-persist/CLEAR_STATE_REQUEST': (action: ReturnType<typeof actions.clearStateRequest>) => {
-            return new Promise((resolve, reject) => {
+            return new Promise(async (resolve, reject) => {
                 try {
-                    clearStateInStorage(opts);
+                    await clearStateInStorage(opts);
                     resolve();
                 } catch (err) {
                     reject(err);
                 }
             })
             .then(() => store.dispatch(actions.clearStateSuccess()))
-            .catch((err) => {actions.clearStateFailure(err); throw err; });
+            .catch((err) => { store.dispatch(actions.clearStateFailure(err)); throw err; });
         },
         '@@redux-simple-persist/CLEAR_STATE_SUCCESS': (action: ReturnType<typeof actions.clearStateSuccess>) => action,
         '@@redux-simple-persist/CLEAR_STATE_FAILURE': (action: ReturnType<typeof actions.clearStateFailure>) => action,

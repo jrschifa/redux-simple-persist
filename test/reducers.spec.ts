@@ -1,4 +1,4 @@
-import { AnyAction, combineReducers } from 'redux';
+import { AnyAction, combineReducers, createStore } from 'redux';
 
 import { actions } from '@/actions';
 import { persistReducer } from '@/reducers';
@@ -7,7 +7,7 @@ const EMPTY = {};
 type EmptyObject = typeof EMPTY;
 
 describe('reducer', () => {
-  const reducer = persistReducer(combineReducers<EmptyObject, AnyAction>({}));
+  const reducer = persistReducer(combineReducers<EmptyObject, AnyAction>({ mock: (state: any = {}) => state }));
 
   it('should return the initial state', () => {
     expect(reducer({}, {} as AnyAction)).toMatchObject({});

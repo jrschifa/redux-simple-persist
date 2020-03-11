@@ -47,7 +47,7 @@ describe('rules', () => {
     expect(spy).toBeCalled();
 
     const expectedActions = [
-      { type: '@@redux-simple-persist/SAVE_STATE_REQUEST', rules: [mockRule] },
+      { type: '@@redux-simple-persist/SAVE_STATE_REQUEST', payload: [mockRule] },
       { type: '@@redux-simple-persist/SAVE_STATE_SUCCESS' },
     ];
 

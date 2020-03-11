@@ -1,4 +1,4 @@
-import * as localForage from 'localforage';
+import localForage from 'localforage';
 import * as $E from './events';
 import { MapToStateThunk, SimplePersistOptions, SimplePersistRule, SimplePersistStorage, StorageMap } from './models';
 import { mergeState } from './utils';
@@ -27,7 +27,7 @@ export async function loadStateFromStorage<TState>({ rules, storage: defaultStor
     type R = [Partial<TState>, Array<MapToStateThunk<TState>>];
     try {
         const reads = rules.map((rule: SimplePersistRule) => {
-            const storage = storageMap[rule.key] ?? createStorageInstance(rule.key, rule.storage ?? defaultStorage);
+            const storage = storageMap[rule.key] || createStorageInstance(rule.key, rule.storage || defaultStorage);
             emitBeginLoadRule(rule);
             return storage.getItem<string>(rule.key).then((raw: string): [string, Partial<TState> | MapToStateThunk<TState> | null] => {
                 const data = raw ? JSON.parse(raw) : null;
@@ -53,7 +53,7 @@ export async function saveStateToStorage<TState>({ rules, storage: defaultStorag
     emitBeginSave();
     try {
         const writes = rules.map((rule: SimplePersistRule) => {
-            const storage = storageMap[rule.key] ?? createStorageInstance(rule.key, rule.storage ?? defaultStorage);
+            const storage = storageMap[rule.key] || createStorageInstance(rule.key, rule.storage || defaultStorage);
             emitBeginSaveRule(rule);
             const data = rule.mapToStorage(state);
             const raw = JSON.stringify(data);
@@ -71,11 +71,11 @@ export async function saveStateToStorage<TState>({ rules, storage: defaultStorag
 export async function clearStateInStorage<TState>({ rules, storage: defaultStorage }: SimplePersistOptions<TState>) {
     try {
         const deletes = rules.map((rule: SimplePersistRule) => {
-            const storage = storageMap[rule.key] ?? createStorageInstance(rule.key, rule.storage ?? defaultStorage);
-            storage.removeItem(rule.key);
+            const storage = storageMap[rule.key] || createStorageInstance(rule.key, rule.storage || defaultStorage);
+            return storage.removeItem(rule.key);
         });
         await Promise.all(deletes);
     } catch (err) {
-        console.error(err);
+        throw err;
     }
 }
